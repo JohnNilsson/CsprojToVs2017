@@ -58,14 +58,6 @@ namespace Project2015To2017
             var directory = fileInfo.Directory;
             Task.WaitAll(_transformationsToApply.Select(t => t.TransformAsync(xmlDocument, directory, projectDefinition)).ToArray());
 
-            var backupFileName = fileInfo.FullName + ".old";
-            if (File.Exists(backupFileName))
-            {
-                Console.Write($"Transformation succeeded but cannot create backup file. Please delete {backupFileName}.");
-                return;
-            }
-            File.Copy(args[0], fileInfo.FullName + ".old");
-
             new ProjectWriter().Write(projectDefinition, fileInfo);
         }
     }
