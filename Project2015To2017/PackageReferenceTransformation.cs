@@ -11,6 +11,18 @@ namespace Project2015To2017
     {
         public Task TransformAsync(XDocument projectFile, DirectoryInfo projectFolder, Project definition)
         {
+          XNamespace nsSys = "http://schemas.microsoft.com/developer/msbuild/2003";
+          definition.PackageReferences = projectFile
+            .Element(nsSys + "Project")
+            .Elements(nsSys + "ItemGroup")
+            .Elements(nsSys + "PackageReference")
+            .Select(x => new PackageReference
+            {
+              Id = x.Attribute("Include").Value,
+              Version = x.Attribute("Version").Value
+            }).ToArray();
+
+
             var packagesConfig = projectFolder.GetFiles("packages.config", SearchOption.TopDirectoryOnly);
             if (packagesConfig == null || packagesConfig.Length == 0)
             {
@@ -37,12 +49,12 @@ namespace Project2015To2017
                 };
             }
 
-            definition.PackageReferences = document.Element("packages").Elements("package").Select(x => new PackageReference
+            definition.PackageReferences = definition.PackageReferences.Concat(document.Element("packages").Elements("package").Select(x => new PackageReference
             {
                 Id = x.Attribute("id").Value,
                 Version = x.Attribute("version").Value,
                 IsDevelopmentDependency = x.Attribute("developmentDependency")?.Value == "true"
-            }).Concat(testReferences).ToArray();
+            })).Concat(testReferences).ToArray();
 
             foreach (var reference in definition.PackageReferences)
             {
