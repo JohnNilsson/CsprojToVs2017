@@ -60,13 +60,20 @@ namespace Project2015To2017.Writing
 
             if (project.AssemblyReferences?.Count > 0)
             {
-                var assemblyReferences = new XElement("ItemGroup");
-                foreach (var assemblyReference in project.AssemblyReferences.Where(x => !IsDefaultIncludedAssemblyReference(x)))
+              var assemblyReferences = new XElement("ItemGroup");
+              foreach (var assemblyReference in project.AssemblyReferences.Where(x => !IsDefaultIncludedAssemblyReference(x)))
+              {
+                if (assemblyReference.Contains(Path.DirectorySeparatorChar))
                 {
-                    assemblyReferences.Add(new XElement("Reference", new XAttribute("Include", assemblyReference)));
+                  var hintPath = assemblyReference;
+                  var assemblyName = Path.GetFileNameWithoutExtension(assemblyReference);
+                  assemblyReferences.Add(new XElement("Reference", new XAttribute("Include", assemblyName), new XElement("HintPath", hintPath)));
                 }
-
-                projectNode.Add(assemblyReferences);
+                else
+                {
+                  assemblyReferences.Add(new XElement("Reference", new XAttribute("Include", assemblyReference)));
+                }
+              }
             }
 
             // manual includes
