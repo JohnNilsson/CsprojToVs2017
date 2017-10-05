@@ -35,7 +35,12 @@ namespace Project2015To2017
 				definition.TargetFrameworks = new[] { ToTargetFramework(targetFramework) };
 			}
 
-            definition.ConditionalPropertyGroups = propertyGroups.Where(x => x.Attribute("Condition") != null).ToArray();
+            definition.ConditionalPropertyGroups = (
+              from propertyGroup in propertyGroups
+              let condition = propertyGroup.Attribute("Condition")?.Value
+              where condition != null && !condition.TrimStart().StartsWith("'$(Configuration)|$(Platform)'")
+              select propertyGroup
+            ).ToArray();
 
             if (definition.Type == ApplicationType.Unknown)
             {
