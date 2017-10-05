@@ -74,6 +74,7 @@ namespace Project2015To2017.Writing
                   assemblyReferences.Add(new XElement("Reference", new XAttribute("Include", assemblyReference)));
                 }
               }
+              projectNode.Add(assemblyReferences);
             }
 
             // manual includes
