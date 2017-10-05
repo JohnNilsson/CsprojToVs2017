@@ -145,6 +145,10 @@ namespace Project2015To2017.Writing
                 mainPropertyGroup.Add(new XElement("OutputType", "WinExe"));
                 mainPropertyGroup.Add(new XElement("RuntimeIdentifier", "win10-x64"));
                 break;
+              case ApplicationType.ClassLibrary:
+                mainPropertyGroup.Add(new XElement("AutoGenerateBindingRedirects", "true"));
+                mainPropertyGroup.Add(new XElement("GenerateBindingRedirectsOutputType", "true"));
+                break;
             }
 
 
