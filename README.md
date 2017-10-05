@@ -16,5 +16,7 @@ Using the tool is simple, it is a simple command line utitlity that has a single
 
 For example
 `Project2015To2017.exe "D:\Path\To\My\TestProject.csproj"`
+or
+` git reset --hard && find . -iname "*.csproj" | xargs -n1 /c/dev/github.com/hvanbakel/CsprojToVs2017/Project2015To2017/bin/Debug/net46/Project2015To2017.exe`
 
 After confirming this is an old style project file, it will start performing the conversion. When it has gathered all the data it needs it first creates a backup of the old project file (suffixed with .old) and then generates a new project file in the new format. 
