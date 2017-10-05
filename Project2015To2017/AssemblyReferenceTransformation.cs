@@ -12,12 +12,15 @@ namespace Project2015To2017
         {
             XNamespace nsSys = "http://schemas.microsoft.com/developer/msbuild/2003";
 
-            definition.AssemblyReferences = projectFile
-				.Element(nsSys + "Project")
-				.Elements(nsSys + "ItemGroup")
-				.Elements(nsSys + "Reference")
-				.Where(x => !x.Elements(nsSys + "HintPath").Any())
-				.Select(x => x.Attribute("Include").Value).ToArray();
+            definition.AssemblyReferences = (
+              from itemGroup in projectFile.Element(nsSys + "Project").Elements(nsSys + "ItemGroup")
+              from reference in itemGroup.Elements(nsSys + "Reference")
+              let include = reference.Attribute("Include").Value
+              let hintPath = reference.Elements(nsSys + "HintPath").SingleOrDefault()?.Value
+              let isNugetRef = hintPath != null && hintPath.Contains("packages\\")
+              where ! isNugetRef
+              select hintPath ?? include
+            ).ToArray();
 
             return Task.CompletedTask;
         }
