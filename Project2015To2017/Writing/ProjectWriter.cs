@@ -125,7 +125,28 @@ namespace Project2015To2017.Writing
         private XElement GetMainPropertyGroup(Project project, FileInfo outputFile)
         {
             var mainPropertyGroup = new XElement("PropertyGroup",
-                ToTargetFrameworks(project.TargetFrameworks));
+              ToTargetFrameworks(project.TargetFrameworks));
+            // https://github.com/dotnet/sdk/issues/350
+            mainPropertyGroup.Add(new XElement("Platforms", "x64"));
+
+            // Regaring RuntimeIdentifier and Platforms
+            // https://github.com/dotnet/sdk/issues/840
+            // https://github.com/dotnet/sdk/issues/696
+            // https://github.com/dotnet/standard/issues/193
+            // https://github.com/dotnet/sdk/blob/master/src/Tasks/Microsoft.NET.Build.Tasks/build/Microsoft.NET.Sdk.props
+            switch (project.Type)
+            {
+              case ApplicationType.ConsoleApplication:
+                mainPropertyGroup.Add(new XElement("OutputType", "Exe"));
+                mainPropertyGroup.Add(new XElement("RuntimeIdentifier", "win10-x64"));
+                break;
+              case ApplicationType.WindowsApplication:
+                mainPropertyGroup.Add(new XElement("OutputType", "WinExe"));
+                mainPropertyGroup.Add(new XElement("RuntimeIdentifier", "win10-x64"));
+                break;
+            }
+
+
 
             AddIfNotNull(mainPropertyGroup, "Optimize", project.Optimize ? "true" : null);
             AddIfNotNull(mainPropertyGroup, "TreatWarningsAsErrors", project.TreatWarningsAsErrors ? "true" : null);
@@ -133,15 +154,6 @@ namespace Project2015To2017.Writing
             AddIfNotNull(mainPropertyGroup, "AssemblyName", project.AssemblyName != Path.GetFileNameWithoutExtension(outputFile.Name) ? project.AssemblyName : null);
             AddIfNotNull(mainPropertyGroup, "AllowUnsafeBlocks", project.AllowUnsafeBlocks ? "true" : null);
 
-            switch (project.Type)
-            {
-                case ApplicationType.ConsoleApplication:
-                    mainPropertyGroup.Add(new XElement("OutputType", "Exe"));
-                    break;
-                case ApplicationType.WindowsApplication:
-                    mainPropertyGroup.Add(new XElement("OutputType", "WinExe"));
-                    break;
-            }
 
             AddAssemblyAttributeNodes(mainPropertyGroup, project.AssemblyAttributes);
             AddPackageNodes(mainPropertyGroup, project.PackageConfiguration);
