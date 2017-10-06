@@ -13,6 +13,7 @@ namespace Project2015To2017.Writing
     {
         public void Write(Project project, FileInfo outputFile)
         {
+            //TODO: Detemine if "Microsoft.NET.Test.Sdk should be used
             var projectNode = new XElement("Project", new XAttribute("Sdk", "Microsoft.NET.Sdk"));
 
             projectNode.Add(GetMainPropertyGroup(project, outputFile));
@@ -145,6 +146,10 @@ namespace Project2015To2017.Writing
                 mainPropertyGroup.Add(new XElement("OutputType", "WinExe"));
                 mainPropertyGroup.Add(new XElement("RuntimeIdentifier", "win10-x64"));
                 break;
+
+              // https://github.com/dotnet/sdk/issues/1351
+              // https://github.com/dotnet/sdk/issues/1595
+              // Or should https://github.com/Microsoft/vstest/blob/master/src/package/nuspec/Microsoft.NET.Test.Sdk.targets be used instead?
               case ApplicationType.ClassLibrary:
                 mainPropertyGroup.Add(new XElement("AutoGenerateBindingRedirects", "true"));
                 mainPropertyGroup.Add(new XElement("GenerateBindingRedirectsOutputType", "true"));
